@@ -1,17 +1,37 @@
+from flask import Flask, request, jsonify
 from student_env import StudentEnv
+
+app = Flask(_name_)
 
 env = StudentEnv()
 
-print("Starting environment...")
+# RESET endpoint (this is what is failing for you)
+@app.route("/reset", methods=["POST"])
+def reset():
+    global env
+    env = StudentEnv()
+    state = env.reset()
+    return jsonify({"state": state})
 
-state = env.reset()
-done = False
-total_reward = 0
-
-while not done:
-    action = "study"
+# STEP endpoint
+@app.route("/step", methods=["POST"])
+def step():
+    global env
+    data = request.get_json()
+    action = data.get("action", "study")
+    
     state, reward, done = env.step(action)
-    total_reward += reward
+    
+    return jsonify({
+        "state": state,
+        "reward": reward,
+        "done": done
+    })
 
-print("Final State:", state)
-print("Total Reward:", total_reward)
+# HEALTH check (sometimes required)
+@app.route("/health", methods=["GET"])
+def health():
+    return {"status": "ok"}
+
+if _name_ == "_main_":
+    app.run(host="0.0.0.0", port=8000)

@@ -5,7 +5,6 @@ app = Flask(_name_)
 
 env = StudentEnv()
 
-# RESET endpoint (this is what is failing for you)
 @app.route("/reset", methods=["POST"])
 def reset():
     global env
@@ -13,25 +12,23 @@ def reset():
     state = env.reset()
     return jsonify({"state": state})
 
-# STEP endpoint
 @app.route("/step", methods=["POST"])
 def step():
     global env
     data = request.get_json()
     action = data.get("action", "study")
-    
+
     state, reward, done = env.step(action)
-    
+
     return jsonify({
         "state": state,
         "reward": reward,
         "done": done
     })
 
-# HEALTH check (sometimes required)
 @app.route("/health", methods=["GET"])
 def health():
-    return {"status": "ok"}
+    return jsonify({"status": "ok"})
 
 if _name_ == "_main_":
     app.run(host="0.0.0.0", port=8000)

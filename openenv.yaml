@@ -1,0 +1,9 @@
+name: student-ai-env
+description: Student learning environment simulation
+
+entrypoint: inference.py
+
+interfaces:
+  - step
+  - reset
+  - state

@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
 from student_env import StudentEnv
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 env = StudentEnv()
 
 @app.route("/reset", methods=["POST"])
+@app.route("/reset/", methods=["POST"])
 def reset():
     global env
     env = StudentEnv()
@@ -13,11 +14,11 @@ def reset():
     return jsonify({"state": state})
 
 @app.route("/step", methods=["POST"])
+@app.route("/step/", methods=["POST"])
 def step():
     global env
     data = request.get_json(silent=True)
 
-    # Handle empty request safely
     if not data:
         action = "study"
     else:
@@ -35,6 +36,5 @@ def step():
 def health():
     return jsonify({"status": "ok"})
 
-# IMPORTANT: force correct startup
-if _name_ == "_main_":
-    app.run(host="0.0.0.0", port=8000, debug=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)

@@ -15,8 +15,13 @@ def reset():
 @app.route("/step", methods=["POST"])
 def step():
     global env
-    data = request.get_json()
-    action = data.get("action", "study")
+    data = request.get_json(silent=True)
+
+    # Handle empty request safely
+    if not data:
+        action = "study"
+    else:
+        action = data.get("action", "study")
 
     state, reward, done = env.step(action)
 
@@ -30,5 +35,6 @@ def step():
 def health():
     return jsonify({"status": "ok"})
 
+# IMPORTANT: force correct startup
 if _name_ == "_main_":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000, debug=False)
